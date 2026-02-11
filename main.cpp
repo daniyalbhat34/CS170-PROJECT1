@@ -42,6 +42,25 @@ struct State{
     int cost;
 };
 
+bool isGoalState(int currState[4][4]) {
+    int goalState[4][4] = { {1, 2, 3, 4},
+                            {5, 6, 7, 8},
+                            {9, 10, 11, 12},
+                            {13, 14, 15, 0}
+                        };
+    for(unsigned int i = 0; i < 4; i++) {
+        for(unsigned int j = 0; j < 4; j++) {
+            return (goalState[i][j] != currState[i][j]);
+        }
+    }
+
+    return true;
+}
+
+int uniformCostSearch(int currState[4][4]) {
+
+}
+
 int main() {
     // We get the puzzle as well as the position of empty tile
 
@@ -51,7 +70,7 @@ int main() {
 
     printPuzzle(currState.puzzle);
 
-    
+    cout << "The cost according to Uniform Cost Search is " << uniformCostSearch(currState) << endl;
 
 
     return 0;
