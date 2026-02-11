@@ -3,7 +3,8 @@
 
 using namespace std;
 
-void getPuzzle(int puzzle[4][4]) {
+int getPuzzle(int puzzle[4][4]) {
+    int k, l;
     // Get the 8 puzzle from the user
     cout << "Enter the puzzle. \n";
 
@@ -15,8 +16,12 @@ void getPuzzle(int puzzle[4][4]) {
                 cout << "The system ran into an error state \n";
                 exit(EXIT_FAILURE);
             }
+            if(puzzle[i][j] == 0) {
+                k, l = i, j;
+            }
         }
     }
+    return k, l;
 }
     
 void printPuzzle(int puzzle[4][4]) {
@@ -30,12 +35,24 @@ void printPuzzle(int puzzle[4][4]) {
     }
 }
 
-int main() {
-
+struct State{
     int puzzle[4][4];
+    int tileRow;
+    int tileCol;
+    int cost;
+};
 
-    getPuzzle(puzzle);
-    printPuzzle(puzzle);
+int main() {
+    // We get the puzzle as well as the position of empty tile
+
+    State currState;
+    int i, j = getPuzzle(currState.puzzle);
+    currState.tileRow, currState.tileCol = i, j;
+
+    printPuzzle(currState.puzzle);
+
+    
+
 
     return 0;
 }
