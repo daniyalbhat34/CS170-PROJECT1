@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -40,10 +41,12 @@ struct State{
     int puzzle[4][4];
     int tileRow = 0;
     int tileCol = 0;
-    int cost = 0;
+    int gCost = 0;
+    int hCost = 0;
+    int fCost = 0;
 
     bool operator<(const State& compState) const {
-        return cost > compState.cost;  
+        return gCost > compState.gCost;  
     }
 };
 
@@ -62,12 +65,12 @@ bool isGoalState(const int (&currState)[4][4]) {
     return true;
 }
 
-string makeString(State& stringState) {
-    string reqString;
+string makeString(const State& stringState) {
+    string reqString = "";
 
     for(unsigned int i = 0; i < 4; i++) {
         for(unsigned int j = 0; j < 4; j++) {
-            reqString+(to_string(stringState.puzzle[i][j]));
+            reqString += (to_string(stringState.puzzle[i][j]));
         }
     }
 
@@ -83,9 +86,9 @@ bool alreadyVisited(const vector<string>& visited, const string& currString) {
 
 vector <State>getChildren(const State &checkState) {
     // Legal moves are left, right, up and down so it's based on adding and subtracting coordinates
-    int validMoves[4][2] = {{-1,0}, 
-                            {1,0}, 
-                            {0,1}, 
+    int validMoves[4][2] = {{0,1},
+                            {-1,0}, 
+                            {1,0},  
                             {0,-1}};
     vector<State> children;
 
@@ -105,7 +108,7 @@ vector <State>getChildren(const State &checkState) {
 
             newState.tileRow = newBlankRow;
             newState.tileCol = newBlankCol;
-            newState.cost = checkState.cost + 1;
+            newState.gCost = checkState.gCost + 1;
             children.push_back(newState);
         }
         
@@ -114,34 +117,56 @@ vector <State>getChildren(const State &checkState) {
     return children;
 }
 
-int generalSearch(State currState) {
+int misplacedTies(const State& currState) {
+    int goalState[4][4] = { {1, 2, 3, 4},
+                            {5, 6, 7, 8},
+                            {9, 10, 11, 12},
+                            {13, 14, 15, 0}
+                        };
+    int count = 0;
+    for(unsigned int i = 0; i < 4; i++) {
+        for(unsigned int j = 0; j < 4; j++) {
+            if (goalState[i][j] != currState.puzzle[i][j] && currState.puzzle[i][j] != 0) count++;
+        }
+    }
+    return count;
+}
+
+int generalSearch(const State& currState, const int option) {
     priority_queue<State> allStates;
     allStates.push(currState);
     
     vector<string> visited;
+    int costReq = 0;
 
     // We check if the queue is empty if not we continue to iterate through  it
     while(!allStates.empty()){
         State checkState = allStates.top();
         allStates.pop();
+        
 
         string currString = makeString(checkState);
-        if(alreadyVisited(visited, currString)) continue;
+        if(!alreadyVisited(visited, currString)) {
+            visited.push_back(currString);
+            printPuzzle(checkState.puzzle);
 
-        visited.push_back(currString);
+            if(isGoalState(checkState.puzzle)) {
+                costReq = checkState.gCost;
+                break;
+            }
 
-        if(isGoalState(checkState.puzzle)) return checkState.cost;
+            vector<State> children = getChildren(checkState);
 
-        vector<State> children = getChildren(checkState);
-        
-        for(unsigned int i = 0; i < children.size(); i++) {
-            allStates.push(children.at(i));
-            printPuzzle(children.at(i).puzzle);
+            for(unsigned int i = 0; i < children.size(); i++) {
+                allStates.push(children.at(i));
+            }
         }
+
+        
     }
 
     // Debug mode
-    return 1;
+    return costReq;
 }
 
 int main() {
@@ -150,14 +175,58 @@ int main() {
     State currState;
     int i, j;
     getPuzzle(currState.puzzle, i, j);
-    currState.cost = 0;
     currState.tileRow = i;
     currState.tileCol = j;
+    int option;
 
     printPuzzle(currState.puzzle);
 
-    cout << "The cost according to Uniform Cost Search is " << generalSearch(currState) << endl;
+    cout << "Chose the algorithm to solve the puzzle\n"
+        << "Enter 0 for Uniform Cost Seatch\n"
+        << "Enter 1 for Misplaced tile Seatch\n"
+        << "Enter 2 for Manhattan tile Seatch\n";
 
+    cin >> option;
+    if(cin.fail()) {
+        cout << "System entered in error state\n";
+        exit(EXIT_FAILURE);
+    }
 
+    while(option > 2 || option < 0) {
+        cout << "Chose the algorithm to solve the puzzle\n"
+        << "Enter 0 for Uniform Cost Seatch\n"
+        << "Enter 1 for Misplaced tile Seatch\n"
+        << "Enter 2 for Manhattan tile Seatch\n";
+
+        cin >> option;
+        if(cin.fail()) {
+            cout << "System entered in error state\n";
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    if(option == 0) {
+        auto start = std::chrono::high_resolution_clock::now();
+        cout << "The cost according to Uniform Cost Search is " << generalSearch(currState, 0) << endl;
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+        cout << "Time taken is " << duration.count() << " microseconds" << endl;
+    } else if(option == 1) {
+        auto start = std::chrono::high_resolution_clock::now();
+        cout << "The cost according to Misplaced tile Search is " << generalSearch(currState, 1) << endl;
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+        cout << "Time taken is " << duration.count() << " microseconds" << endl;
+    } else{
+        auto start = std::chrono::high_resolution_clock::now();
+        cout << "The cost according to Manhattan Search is " << generalSearch(currState, 2) << endl;
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+        cout << "Time taken is " << duration.count() << " microseconds" << endl;
+    }
+    
     return 0;
 }
