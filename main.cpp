@@ -4,6 +4,7 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 
@@ -191,12 +192,12 @@ int generalSearch(State& currState, const int option, int& nodes) {
                 costReq = checkState.gCost;
                 break;
             }
+            nodes++;
             // We get the children and push them into the priority queue
             vector<State> children = getChildren(checkState, option);
 
             for(unsigned int i = 0; i < children.size(); i++) {
                 allStates.push(children.at(i));
-                nodes++;
             }
         }
 
@@ -275,7 +276,7 @@ int main() {
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-        cout << "Time taken is " << (duration.count() / 1000000.0) << " seconds" << endl;
+        cout << "Time taken is " << setprecision(2) << (duration.count() / 1000000.0) << " seconds" << endl;
     }
     
     return 0;
