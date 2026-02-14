@@ -58,7 +58,7 @@ struct State{
 
 // Finds the number of tiles whichh are not at the exact location
 int misplacedTiles(const State& currState) {
-    int goalState[4][4] = { {1, 2, 3},
+    int goalState[3][3] = { {1, 2, 3},
                             {4, 5, 6},
                             {7, 8, 0},
                         };
@@ -172,7 +172,11 @@ vector <State>getChildren(const State &checkState, const int option) {
 int generalSearch(State& currState, const int option, int& nodes) {
     priority_queue<State> allStates;
     allStates.push(currState);
-    currState.hCost = misplacedTiles(currState);
+    if(option == 1) {
+        currState.hCost = misplacedTiles(currState);
+    } else if (option == 2) {
+        currState.hCost = manhattanDist(currState);
+    }
     
     vector<string> visited;
     int costReq = 0;
@@ -216,6 +220,7 @@ int main() {
     currState.tileCol = j;
     int option;
     int nodes = 0;
+    int finalCost = 0;
 
     printPuzzle(currState.puzzle);
 
@@ -245,9 +250,11 @@ int main() {
 
     // We also print the time required by each algorithm
 
+    finalCost = generalSearch(currState, option, nodes);
+
     if(option == 0) {
         auto start = std::chrono::high_resolution_clock::now();
-        cout << "The cost according to Uniform Cost Search is " << generalSearch(currState, 0, nodes) << endl;
+        cout << "The cost according to Uniform Cost Search is " << finalCost << endl;
         cout << "Nodes expanded = " << nodes << endl;
         auto stop = std::chrono::high_resolution_clock::now();
 
@@ -255,15 +262,15 @@ int main() {
         cout << "Time taken is " << (duration.count() / 1000000.0)  << " seconds" << endl;
     } else if(option == 1) {
         auto start = std::chrono::high_resolution_clock::now();
-        cout << "The cost according to Misplaced tile Search is " << generalSearch(currState, 1, nodes) << endl;
+        cout << "The cost according to Misplaced tile Search is " << finalCost << endl;
         cout << "Nodes expanded = " << nodes << endl;
         auto stop = std::chrono::high_resolution_clock::now();
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
         cout << "Time taken is " << (duration.count() / 1000000.0)  << " seconds" << endl;
-    } else{
+    } else {
         auto start = std::chrono::high_resolution_clock::now();
-        cout << "The cost according to Manhattan Search is " << generalSearch(currState, 2, nodes) << endl;
+        cout << "The cost according to Manhattan Search is " << finalCost << endl;
         cout << "Nodes expanded = " << nodes << endl;
         auto stop = std::chrono::high_resolution_clock::now();
 
