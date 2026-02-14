@@ -220,9 +220,9 @@ int main() {
     printPuzzle(currState.puzzle);
 
     cout << "Chose the algorithm to solve the puzzle\n"
-        << "Enter 0 for Uniform Cost Seatch\n"
-        << "Enter 1 for Misplaced tile Seatch\n"
-        << "Enter 2 for Manhattan tile Seatch\n";
+        << "Enter 0 for Uniform Cost Search\n"
+        << "Enter 1 for Misplaced tile Search\n"
+        << "Enter 2 for Manhattan tile Search\n";
 
     cin >> option;
     if(cin.fail()) {
@@ -232,9 +232,9 @@ int main() {
 
     while(option > 2 || option < 0) {
         cout << "Chose the algorithm to solve the puzzle\n"
-        << "Enter 0 for Uniform Cost Seatch\n"
-        << "Enter 1 for Misplaced tile Seatch\n"
-        << "Enter 2 for Manhattan tile Seatch\n";
+        << "Enter 0 for Uniform Cost Search\n"
+        << "Enter 1 for Misplaced tile Search\n"
+        << "Enter 2 for Manhattan tile Search\n";
 
         cin >> option;
         if(cin.fail()) {
