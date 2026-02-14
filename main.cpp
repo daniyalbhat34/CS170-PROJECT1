@@ -172,12 +172,6 @@ vector <State>getChildren(const State &checkState, const int option) {
 int generalSearch(State& currState, const int option, int& nodes) {
     priority_queue<State> allStates;
     allStates.push(currState);
-    if(option == 1) {
-        currState.hCost = misplacedTiles(currState);
-    } else if (option == 2) {
-        currState.hCost = manhattanDist(currState);
-    }
-    
     vector<string> visited;
     int costReq = 0;
 
@@ -249,6 +243,11 @@ int main() {
     }
 
     // We also print the time required by each algorithm
+    if(option == 1) {
+        currState.hCost = misplacedTiles(currState);
+    } else if (option == 2) {
+        currState.hCost = manhattanDist(currState);
+    }
 
     finalCost = generalSearch(currState, option, nodes);
 
