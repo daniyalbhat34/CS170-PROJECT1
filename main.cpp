@@ -51,13 +51,13 @@ struct State{
         return gCost + hCost;
     }
 
-    // Comparison operator to make sure items are added to th equeue based on priority
+    // Comparison operator to make sure items are added to the queue based on priority
     bool operator<(const State& compState) const {
         return hCost + gCost > compState.hCost + compState.gCost;  
     }
 };
 
-// Finds the number of tiles whichh are not at the exact location
+// Finds the number of tiles which are not at the exact location
 int misplacedTiles(const State& currState) {
     int goalState[3][3] = { {1, 2, 3},
                             {4, 5, 6},
